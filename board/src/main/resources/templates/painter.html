@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+
+    <title>Chobo painter</title>
+    <style>
+      canvas {
+        border: 1px solid blue;
+      }
+
+      .jb_table {
+        display: table;
+      }
+
+      .row {
+        border-radius: 10px;
+        display: table-row;
+      }
+
+      .cell {
+        display: table-cell;
+        vertical-align: top;
+      }
+
+      textarea {
+        background-color: #fcf3cf;
+      }
+    </style>
+    <script language="JavaScript">
+      // Date: 2019.04.24
+
+      var textareaList = ["history"];
+
+      function clearText(idOfTextArea) {
+        document.getElementById(idOfTextArea).value = "";
+      }
+
+      function  sendPost(url, params){
+        var form = document.createElement('form');
+        form.setAttribute('method','post');
+        form.setAttribute('action',url);
+        document.charset="utf-8";
+
+        for (var key in params){
+          var hiddenField = document.createElement('input');
+          hiddenField.setAttribute('name',key);
+          hiddenField.setAttribute('value',params[key]);
+          form.appendChild(hiddenField);
+        }
+        document.body.appendChild(form);
+        form.submit();
+      }
+      function handleSaveClick() {
+        // console.log("1111111111111111111111");
+        // console.log(canvas.toDataURL());
+        sendPost("http://127.0.0.1:8888/send_pic",{'test': canvas.toDataURL('image/png')});
+        // canvas.toDataURL    canvas.toBlob((blob) => { /* … */ }, 'image/png', 1.00)};
+
+
+        // const image = canvas.toDataURL();
+        // const link = document.createElement("a");
+        // link.href = image;
+        // console.log(image);
+        // link.download = "PaintJS";
+        // link.click();
+      }
+
+      function SaveAsTxt() {
+        var fileName = document.getElementById("title").value;
+        if (fileName.length == 0) {
+          fileName = "image";
+        }
+        fileName += ".txt";
+
+        var preData = 'version: V0.617a1\n';
+        var postData =  preData + document.getElementById("history").value;
+
+        var link = document.createElement("a");
+        link.setAttribute("download", fileName);
+        link.setAttribute(
+          "href",
+          "data:" +
+            "application/[txt]" +
+            ";charset=utf-8," +
+            encodeURIComponent(postData)
+        );
+        link.click();
+      }
+
+
+      function SaveAsJson() {
+        console.log("SaveAsJson");
+        var fileName = document.getElementById("title").value;
+        if (fileName.length == 0) {
+          fileName = "imsge";
+        }
+
+        fileName += ".json";
+
+        var preData = {'version':'V0.617a1'};
+        textareaList.forEach(function(e) {
+          preData[e] = document.getElementById(e).value;
+        });
+
+        var jsonData = JSON.stringify(preData);
+
+        var link = document.createElement("a");
+        var file = new Blob([jsonData], { type: "text/plain" });
+        link.href = URL.createObjectURL(file);
+        link.download = fileName;
+        link.click();
+      }
+
+      function isJsonFile(filename) {
+        var ridx = filename.lastIndexOf(".");
+        var extension = filename.substring(ridx + 1);
+
+        console.log(extension);
+
+        if (extension.length != 4 || extension.toLowerCase() != "json") {
+          return false;
+        }
+        return true;
+      }
+
+      function isTextFile(filename) {
+        var ridx = filename.lastIndexOf(".");
+        var extension = filename.substring(ridx + 1);
+
+        console.log(extension);
+
+        if (extension.length != 3 || extension.toLowerCase() != "txt") {
+          return false;
+        }
+        return true;
+      }
+
+
+      function loadFile() {
+        var loadFile = document.getElementById("load_filename");
+        var file = loadFile.files[0];
+          
+        if (!file) {
+          return;
+        }
+
+        var fileName = document.getElementById("load_filename").value;
+        var ridx = fileName.lastIndexOf("\\");
+
+        fileName = fileName.substring(ridx + 1);
+
+        if (isJsonFile(fileName)) {
+          LoadJson(file, fileName);
+        } else if(isTextFile(fileName)) {
+          LoadText(file, fileName);
+        } 
+      }
+
+      function LoadJson(file, fileName) {
+        document.getElementById("title").value = fileName;
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var contents = e.target.result;
+          displayLoadJsonData(contents);
+        };
+        reader.readAsText(file);
+      }
+
+      function displayLoadJsonData(contents) {
+        var noteData = JSON.parse(contents);
+
+        var version = noteData['version'];
+        console.log(version);
+        document.getElementById('history').value = noteData['history'];
+        reDrawCanvas();
+      }
+
+      function LoadText(file, fileName) {
+        document.getElementById("title").value = fileName;
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var contents = e.target.result;
+          displayLoadTextData(contents);
+        };
+        reader.readAsText(file);
+      }
+
+      function displayLoadTextData(contents) {
+        var noteData = contents.split('\n');
+        var history = "";
+         
+        noteData.forEach(function (e){
+          if (e[0] != 'v') {
+            history += e + "\n";
+          }
+        }); 
+        document.getElementById('history').value = history;
+        reDrawCanvas();
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <div class="jb_table">
+      <div class="row">
+        <span class="cell" width="82">
+          <div>
+            <div class="jb_table">
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/red.png" onclick="selectColor('red')"/>
+                  <img src="/files/orange.png" onclick="selectColor('orange')" />
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/yellow.png" onclick="selectColor('yellow')" />
+                  <img src="/files/green.png" onclick="selectColor('green')"/>
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/blue.png" onclick="selectColor('blue')" />
+                  <img src="/files/lightblue.png" onclick="selectColor('lightblue')" />
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/lightgreen.png" onclick="selectColor('lightgreen')"/>
+                  <img src="/files/brown.png" onclick="selectColor('brown')"/>
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/purple.png" onclick="selectColor('purple')" />
+                  <img src="/files/pink.png" onclick="selectColor('pink')"/>
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/gray.png" onclick="selectColor('gray')" />
+                  <img src="/files/lightgray.png" onclick="selectColor('lightgray')"/>
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/black.png" onclick="selectColor('black')"/>
+                  <img src="/files/white.png" onclick="selectColor('white')"/>
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/pencil.png"  onclick="selectTool('pencil')" />
+                  <img src="/files/line.png"  onclick="selectTool('line')" />
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/circle.png" onclick="selectTool('circle')"/>
+                  <img src="/files/filledcircle.png" onclick="selectTool('filledcircle')"/>
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/ellipse.png" onclick="selectTool('ellipse')"/>
+                  <img src="/files/filledellipse.png" onclick="selectTool('filledellipse')"/>
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/square.png" onclick="selectTool('square')"/>
+                  <img src="/files/filledsquare.png" onclick="selectTool('filledsquare')"/>
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/rect.png" onclick="selectTool('rect')" />
+                  <img src="/files/filledrect.png" onclick="selectTool('filledrect')" />
+                </span>
+              </div>
+              <div class="row">
+                <span class="cell">
+                  <img src="/files/triangle.png" onclick="selectTool('tri')" />
+                  <img src="/files/filledtriangle.png" onclick="selectTool('filledtri')" />
+                </span>
+              </div>
+              <div class="row">
+                  <span class="cell">
+                    <img src="/files/undo.png" onclick="undo()"/>
+                    <img src="/files/redo.png" onclick="redo()"/>
+                  </span>
+                </div>
+            </div>
+          </div>
+        </span>
+        <span class="cell">
+          <div>
+            <canvas id="canvas" width="700" height="700"></canvas>
+          </div>
+        </span>
+        <span class="cell">
+          <INPUT type="file" id="load_filename" value="Load" onChange="loadFile()" />
+          <div>Title <input id="title" size="15" /></div>
+          <div>
+            <a id="saveImage" download="image.png">
+                <INPUT type="button" value="Save" onClick="saveImage()" />
+            </a>
+            <INPUT type="button" value="Clear" onClick="initPage()" />
+            <INPUT type="button" value="History" onClick="showHistory()" />
+          </div>
+          <div>
+            <input type="button" value="Save as Json" onClick="SaveAsJson()" />
+            <input type="button" value="Save as Txt" onClick="SaveAsTxt()" />
+          </div>
+          <div>
+            <textarea id="history" cols="40" rows="37" style="display: none;"></textarea>
+          </div>
+          <div id="command">
+          </div>
+              <INPUT type="button" value="Redraw" onClick="reDrawCanvas()" />
+              <INPUT type="button" value="transfer" onClick="handleSaveClick()" />
+          <div>
+          </div>
+        </span>
+      </div>
+    </div>
+    <script src="/files/painter.js"></script>
+    <script src="/files/drawengine.js"></script>
+  </body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
+<!--    <link rel="stylesheet" href="/style.css"/>-->
+    <title>게시글 리스트 페이지</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link
+            href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp"
+            rel="stylesheet">
+</head>
+
+<style>
+
+    .layout {
+        width: 500px;
+        margin: 0 auto;
+        margin-top: 40px;
+    }
+
+</style>
+
+<body>
+<div class="v15_3">
+    <div class="v15_4">
+        <div class="v17_18">
+            <img style="height: 61px; width: 140px; object-fit: contain"
+                 src="/files/brush.png">
+        </div>
+        <div class="v17_29"><span class="v17_27">board</span></div>
+        <div class="v17_30"><span class="v17_3">main</span></div>
+        <div class="v17_37"><span class="v17_32"> Login        </span></div>
+        <div class="v17_38"><span class="v17_39">register</span></div>
+    </div>
+</div>
+<!--<nav class="navbar navbar-expand-lg navbar-light bg-light">-->
+<!--    <div class="container">-->
+<!--        <img style="height: 30px; width: 140px; object-fit: contain"-->
+<!--             src="/style-editor.png">-->
+<!--        <input class="form-control" style="width: 200px" type="search" placeholder="Search" aria-label="Search">-->
+<!--        <div>-->
+<!--            <span class="material-icons">home</span>-->
+<!--            <span class="material-icons">send</span>-->
+<!--            <span class="material-icons-outlined">add_box</span>-->
+<!--            <span class="material-icons-outlined">explore</span>-->
+<!--            <span class="material-icons-outlined">favorite_border</span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</nav>-->
+<div class="container">
+
+    <table>
+        <thead>
+        <tr>
+            <!--      <th>글번호</th>-->
+            <th class="layout">제목</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="board : ${list}">
+            <!--      <td th:text="${board.id}">1</td>-->
+            <td>
+                <a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+        <a th:if="${page != nowPage}"
+           th:href="@{/board/list(page = ${page - 1}, searchKeyword = ${param.searchKeyword})}" th:text="${page}"></a>
+        <strong th:if="${page == nowPage}" th:text="${page}" style="color : red"></strong>
+    </th:block>
+    <form th:action="@{/board/list}" method="get">
+        <input type="text" name="searchKeyword">
+        <button type="submit">검색</button>
+    </form>
+    <a class="input-container" th:href="@{/board/write}">New</a>
+    <!--  <button th:href="@{/board/write}" method="get">New</button>-->
+</div>
+
+</body>
+</html><br/><br/>
+<style>* {
+    box-sizing: border-box;
+}
+body {
+    font-size: 14px;
+}
+.v15_3 {
+    width: 100%;
+    height: 200px;
+    background: rgba(255,255,255,1);
+    opacity: 1;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    overflow: hidden;
+}
+.v15_4 {
+    width: 1650px;
+    height: 160px;
+    background: rgba(158,166,237,1);
+    opacity: 1;
+    position: absolute;
+    top: 30px;
+    left: 62px;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    overflow: hidden;
+}
+.v17_18 {
+    width: 84px;
+    height: 71px;
+    background: rgba(255,255,255,1);
+    background: url("/files/brush.png");
+    opacity: 1;
+    position: absolute;
+    top: 29px;
+    left: 85px;
+    overflow: hidden;
+}
+.v17_19 {
+    width: 84px;
+    height: 71px;
+    background: url("/files/brush.png");
+    opacity: 1;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+.v17_20 {
+    width: 28px;
+    height: 23px;
+    background: url("/files/brush.png");
+    opacity: 1;
+    position: absolute;
+    top: 38px;
+    left: 11px;
+    border: 2px solid rgba(0,0,0,1);
+}
+.v17_21 {
+    width: 44px;
+    height: 30px;
+    background: url("/files/brush.png");
+    opacity: 1;
+    position: absolute;
+    top: 8px;
+    left: 29px;
+    border: 2px solid rgba(0,0,0,1);
+}
+.v17_22 {
+    width: 35px;
+    height: 37px;
+    background: url("/files/brush.png");
+    opacity: 1;
+    position: absolute;
+    top: 8px;
+    left: 38px;
+    border: 2px solid rgba(0,0,0,1);
+}
+.v17_23 {
+    width: 15px;
+    height: 13px;
+    background: url("/files/brush.png");
+    opacity: 1;
+    position: absolute;
+    top: 26px;
+    left: 38px;
+    border: 2px solid rgba(0,0,0,1);
+}
+.v17_29 {
+    width: 137px;
+    height: 65px;
+    background: rgba(0,191,216,1);
+    padding: 10px 10px;
+    margin: 10px;
+    opacity: 1;
+    position: absolute;
+    top: 29px;
+    left: 320px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    overflow: hidden;
+}
+.v17_27 {
+    width: 111px;
+    color: rgba(0,0,0,1);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: Inter;
+    font-weight: Regular;
+    font-size: 40px;
+    opacity: 1;
+    text-align: right;
+}
+.v17_30 {
+    width: 111px;
+    height: 68px;
+    background: rgba(0,191,216,1);
+    padding: 10px 10px;
+    margin: 10px;
+    opacity: 1;
+    position: absolute;
+    top: 29px;
+    left: 209px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    overflow: hidden;
+}
+.v17_3 {
+    width: 91px;
+    color: rgba(0,0,0,1);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: Inter;
+    font-weight: Regular;
+    font-size: 40px;
+    opacity: 1;
+    text-align: center;
+}
+.v17_37 {
+    width: 89px;
+    height: 41px;
+    background: rgba(0,191,216,1);
+    padding: 10px 10px;
+    margin: 10px;
+    opacity: 1;
+    position: absolute;
+    top: 21px;
+    left: 878px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    overflow: hidden;
+}
+.v17_32 {
+    width: 69px;
+    color: rgba(0,0,0,1);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: Inter;
+    font-weight: Regular;
+    font-size: 24px;
+    opacity: 1;
+    text-align: left;
+}
+.v17_38 {
+    width: 93px;
+    height: 41px;
+    background: rgba(0,191,216,1);
+    padding: 10px 10px;
+    margin: 10px;
+    opacity: 1;
+    position: absolute;
+    top: 68px;
+    left: 878px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    overflow: hidden;
+}
+.v17_39 {
+    width: 73px;
+    color: rgba(0,0,0,1);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: Inter;
+    font-weight: Regular;
+    font-size: 20px;
+    opacity: 1;
+    text-align: left;
+}
+</style>
